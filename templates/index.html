@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Expectancy Prediction</title>
+    <style>
+        body {
+            background-image: url('static/images/background_image.jpg'); /* Replace 'path/to/your/image.jpg' with the actual path to your image file */
+            background-size: auto;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #981313; 
+            font-family: 'Arial', sans-serif; /* Add a font-family as needed */
+           
+        }
+
+        /* Add any additional styling here */
+        h1{
+            color: rgb(10, 5, 161); /* Set text color to white or another contrasting color */
+            text-align: center;
+        }
+        label {
+            color: rgb(4, 3, 51); /* Set text color to white or another contrasting color */
+            text-align: center;
+        }
+
+
+        /* Add more styling for form elements, buttons, etc. */
+        button {
+            background-color: #d106f9; /* Set the background color */
+            color: white; /* Set the text color */
+            padding: 10px 20px; /* Set padding */
+            border: none; /* Remove the border */
+            border-radius: 5px; /* Add border radius for rounded corners */
+            cursor: pointer; /* Add a cursor pointer on hover */
+            font-size: 16px; /* Set font size */
+        }
+
+        /* Change button style on hover */
+        button:hover {
+            background-color: #5b0368; /* Darker background color on hover */
+        }
+         /* Style for transparent background in textboxes */
+         form {
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.2);  /* Semi-transparent white background for the form */
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);  /* Adjusted box shadow */
+            text-align: center;
+            
+            /* Set specific width and height */
+            width: 300px;
+            height: auto; /* You can set a specific height if needed */
+            margin: 0 auto; /* Center the form horizontally */
+        }
+
+        /* Style for form input elements */
+        input, select {
+            width: 100%; /* Make input elements fill the width of the form */
+            padding: 5px; /* Add padding to input elements for better appearance */
+            margin-bottom: 7px; /* Add space below each input element */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+        #prediction-result {
+        text-align: center; /* Center-align the text */
+        margin-top: 20px;   /* Adjust the top margin as needed */
+        font-weight: bold;  /* Make the text bold */
+        font-size: 22px;    
+}
+
+
+    </style>
+</head>
+<body>
+    <h1>Life Expectancy Prediction</h1>
+    <!-- <p class="right-aligned-paragraph">This is a sample paragraph. You can add more text here.</p> -->
+    <!-- <form id="prediction-form" action="/api/predict" method="POST"> -->
+    <form id="prediction-form">   
+        <label for="country">Country:</label>
+        <select id="Country" name="Country"></select><br>
+
+
+        <label for="year">Year:</label>
+        <input type="number" id="year" name="Year" required><br>
+
+        <label for="status">Status:</label>
+        <select id="Status" name="Status"></select><br>
+
+        <label for="adultMortality">Adult Mortality:</label>
+        <input type="number" id="adultMortality" name="Adult_Mortality" required><br>
+
+        <label for="infantDeaths">Infant Deaths:</label>
+        <input type="number" id="infantDeaths" name="infant_deaths" required><br>
+
+        <label for="alcohol">Alcohol:</label>
+        <input type="text" id="alcohol" name="Alcohol" required><br>
+
+        <label for="percentageExpenditure">Percentage Expenditure:</label>
+        <input type="number" id="percentageExpenditure" name="percentage_expenditure" required><br>
+
+        <label for="hepatitisB">Hepatitis B:</label>
+        <input type="text" id="hepatitisB" name="Hepatitis_B" required><br>
+
+        <label for="measles">Measles:</label>
+        <input type="number" id="measles" name="Measles" required><br>
+
+        <label for="bmi">BMI:</label>
+        <input type="number" id="bmi" name="BMI" required><br>
+
+        <label for="underFiveDeaths">Under-Five Deaths:</label>
+        <input type="text" id="underFiveDeaths" name="under-five_deaths" required><br>
+
+        <label for="polio">Polio:</label>
+        <input type="number" id="polio" name="Polio" required><br>
+
+        <label for="totalExpenditure">Total Expenditure:</label>
+        <input type="text" id="totalExpenditure" name="Total_expenditure" required><br>
+
+        <label for="diphtheria">Diphtheria:</label>
+        <input type="number" id="diphtheria" name="Diphtheria" required><br>
+
+        <label for="hivAids">HIV/AIDS:</label>
+        <input type="number" id="hivAids" name="HIV/AIDS" required><br>
+
+        <label for="gdp">GDP:</label>
+        <input type="text" id="gdp" name="GDP" required><br>
+
+        <label for="population">Population:</label>
+        <input type="number" id="population" name="Population" required><br>
+
+        <label for="thinness1-19Years">Thinness 1-19 Years:</label>
+        <input type="text" id="thinness1-19Years" name="thinness__1-19_years" required><br>
+
+        <label for="thinness5-9Years">Thinness 5-9 Years:</label>
+        <input type="number" id="thinness5-9Years" name="thinness_5-9_years" required><br>
+
+        <label for="incomeComposition">Income Composition of Resources:</label>
+        <input type="number" id="incomeComposition" name="Income_composition_of_resources" required><br>
+
+        <label for="schooling">Schooling:</label>
+        <input type="text" id="schooling" name="Schooling" required><br>
+
+        <button type="button" onclick="predictlife()">Predict Life</button>
+    </form>
+    <div id="prediction-result"></div>
+
+    <script>
+        // Fetch dropdown options for categorical columns
+        fetch('/api/Country').then(response => response.json()).then(data => {
+            fillDropdown('Country', data);
+        });
+
+        fetch('/api/Status').then(response => response.json()).then(data => {
+            fillDropdown('Status', data);
+        });
+
+        
+        // Function to fill dropdown options
+        function fillDropdown(id, options) {
+            var dropdown = document.getElementById(id);
+
+            options.forEach(option => {
+                var optionElement = document.createElement('option');
+                optionElement.value = option;
+                optionElement.text = option;
+                dropdown.add(optionElement);
+            });
+        }
+
+        // Function to predict charges
+        function predictlife() {
+            var formData = new FormData(document.getElementById('prediction-form'));
+
+            fetch('/api/predict', {
+                method: 'POST',
+                body: formData
+            // }).then(response => response.json()).then(data => {
+            //     document.getElementById('prediction-result').innerText = 'Predicted life: ' + data;
+            }).then(response => response.json()).then(data => {
+            var predictionResult = document.getElementById('prediction-result');
+            predictionResult.innerText = 'Predicted life: ' + data;
+            predictionResult.style.display = 'block'; 
+            });
+        }
+    </script>
+
+</body>
+</html>
+
+
+
+
+
